@@ -1,6 +1,6 @@
 # Setup report
 
-- Generated: 2026-09-18 09:55 UTC
+- Generated: 2026-09-18 10:04 UTC
 - Machine: Darwin arm64
 - Login shell: /bin/zsh
 - Script ran under: bash 3.2.57(1)-release
@@ -20,6 +20,6 @@
 
 | Check | Status | Fix |
 |---|---|---|
-| Docker daemon reachable | **FAIL** | install Docker Desktop for Mac and open it once from Applications (not needed until session 16) |
+| Docker daemon reachable | pass | — |
 
-**Ready to start.** The container checks are red, but those are not needed until session 16.
+**All checks pass.**
