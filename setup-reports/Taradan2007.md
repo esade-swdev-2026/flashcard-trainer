@@ -1,6 +1,6 @@
 # Setup report
 
-- Generated: 2026-09-18 10:04 UTC
+- Generated: 2026-09-25 10:39 UTC
 - Machine: Darwin arm64
 - Login shell: /bin/zsh
 - Script ran under: bash 3.2.57(1)-release
