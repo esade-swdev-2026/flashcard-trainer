@@ -1,11 +1,7 @@
-# app
+# Flashcard Trainer
 
-> **First thing: rename `app` to your project.** It appears in this file, in
-> `pyproject.toml` (`name`, `[project.scripts]`, `[tool.hatch.build.targets.wheel]`),
-> in the folder `src/app/`, and in the imports under `tests/`. Session 5's lab walks
-> you through it.
-
-One or two sentences on what your program does and who it is for.
+A command-line tool for creating and reviewing flashcards, built for students who
+want a quick, distraction-free way to memorize facts.
 
 ## Install
 
@@ -21,9 +17,9 @@ and CI resolve the same ones. When you change a dependency in `pyproject.toml`, 
 ## Run
 
 ```
-uv run app --help
-uv run app greet World
-uv run app greet World --count 3
+uv run flashcard-trainer --help
+uv run flashcard-trainer add-card "Capital of France?" "Paris"
+uv run flashcard-trainer add-card "Capital of France?" "Paris" --count 3
 ```
 
 ## Develop
@@ -41,9 +37,9 @@ If they pass here, CI passes.
 ## Layout
 
 ```
-src/app/          your package — importable, installable, not just a script
+src/flashcard_trainer/          your package — importable, installable, not just a script
   cli.py          the typer command-line interface
-  __main__.py     lets `python -m app` work
+  __main__.py     lets `python -m flashcard_trainer` work
 tests/            pytest tests, mirroring src/
 pyproject.toml    dependencies and tool configuration — the single source of truth
 ```
