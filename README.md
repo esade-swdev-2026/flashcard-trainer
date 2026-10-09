@@ -43,3 +43,12 @@ src/flashcard_trainer/          your package — importable, installable, not ju
 tests/            pytest tests, mirroring src/
 pyproject.toml    dependencies and tool configuration — the single source of truth
 ```
+
+## I/O
+
+Everywhere the code touches the outside world (console or filesystem) rather than just computing:
+
+- `src/flashcard_trainer/cli.py` — `typer.echo(...)` (prints to the console) and `raise typer.Exit(code=1)` (exits the process) in `add_card`
+- `src/flashcard_trainer/storage.py` — `path.read_text()` / `path.write_text()` in `load_cards`/`save_cards` (reads/writes the cards JSON file)
+
+Everything in `src/flashcard_trainer/flashcards.py` (`Flashcard`, `check_answer`, `score_percentage`) is pure: no I/O, just data in and data out. That's deliberate — it's what makes those functions easy to unit test without touching the filesystem or the terminal.
