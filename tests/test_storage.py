@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from flashcard_trainer.core import Flashcard
+from flashcard_trainer.flashcards import Flashcard
 from flashcard_trainer.storage import load_cards, save_cards
 
 

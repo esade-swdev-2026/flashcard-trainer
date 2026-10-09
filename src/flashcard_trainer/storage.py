@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from flashcard_trainer.core import Flashcard
+from flashcard_trainer.flashcards import Flashcard
 
 
 def save_cards(path: Path, cards: list[Flashcard]) -> None:

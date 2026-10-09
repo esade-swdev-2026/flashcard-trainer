@@ -1,4 +1,4 @@
-from flashcard_trainer.core import Flashcard, check_answer, score_percentage
+from flashcard_trainer.flashcards import Flashcard, check_answer, score_percentage
 
 
 def test_correct_answer_matches_exactly() -> None:
