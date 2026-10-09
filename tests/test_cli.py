@@ -75,3 +75,25 @@ def test_list_cards_empty_file_says_so(tmp_path: Path) -> None:
 
     assert result.exit_code == 0
     assert "no cards" in result.stdout.lower()
+
+
+def test_quiz_reports_score(tmp_path: Path) -> None:
+    file_path = tmp_path / "cards.json"
+    runner = CliRunner()
+    runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(file_path)])
+    runner.invoke(app, ["add-card", "Capital of France?", "Paris", "--file", str(file_path)])
+
+    result = runner.invoke(app, ["quiz", "--file", str(file_path)], input="4\nParis\n")
+
+    assert result.exit_code == 0
+    assert "100.0" in result.stdout
+
+
+def test_quiz_with_no_cards_says_so(tmp_path: Path) -> None:
+    file_path = tmp_path / "cards.json"
+    runner = CliRunner()
+
+    result = runner.invoke(app, ["quiz", "--file", str(file_path)])
+
+    assert result.exit_code == 0
+    assert "no cards" in result.stdout.lower()

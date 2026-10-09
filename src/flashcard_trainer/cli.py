@@ -2,7 +2,7 @@ from pathlib import Path
 
 import typer
 
-from flashcard_trainer.flashcards import Flashcard
+from flashcard_trainer.flashcards import Flashcard, check_answer, score_percentage
 from flashcard_trainer.storage import load_cards, save_cards
 
 app = typer.Typer(help="A terminal flashcard trainer.")
@@ -45,6 +45,24 @@ def list_cards(file: Path = DEFAULT_FILE) -> None:
 
     for card in cards:
         typer.echo(f"[{card.category}] {card.question} -> {card.answer}")
+
+
+@app.command()
+def quiz(file: Path = DEFAULT_FILE) -> None:
+    """Quiz yourself on all saved flashcards."""
+    cards = load_cards(file)
+
+    if not cards:
+        typer.echo("No cards yet. Add one with add-card.")
+        return
+
+    results = []
+    for card in cards:
+        given_answer = typer.prompt(card.question)
+        results.append(check_answer(card, given_answer))
+
+    score = score_percentage(results)
+    typer.echo(f"Score: {score}%")
 
 
 if __name__ == "__main__":
