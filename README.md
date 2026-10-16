@@ -19,7 +19,9 @@ and CI resolve the same ones. When you change a dependency in `pyproject.toml`, 
 ```
 uv run flashcard-trainer --help
 uv run flashcard-trainer add-card "Capital of France?" "Paris"
-uv run flashcard-trainer add-card "Capital of France?" "Paris" --count 3
+uv run flashcard-trainer add-card "What is 2+2?" "4" --category math
+uv run flashcard-trainer list-cards
+uv run flashcard-trainer quiz
 ```
 
 ## Develop
