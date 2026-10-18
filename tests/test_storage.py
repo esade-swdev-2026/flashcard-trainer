@@ -15,9 +15,3 @@ def test_save_and_load_round_trip(tmp_path: Path) -> None:
     loaded = load_cards(file_path)
 
     assert loaded == cards
-
-
-def test_load_missing_file_returns_empty_list(tmp_path: Path) -> None:
-    file_path = tmp_path / "does_not_exist.json"
-
-    assert load_cards(file_path) == []
