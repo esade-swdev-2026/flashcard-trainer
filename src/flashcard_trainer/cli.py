@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -130,6 +131,36 @@ def stats(file: Path = DEFAULT_FILE) -> None:
     for box, count in count_by_box(cards).items():
         typer.echo(f"Box {box}: {count}")
     typer.echo(f"Due today: {len(due_cards(cards, date.today()))} of {len(cards)}")
+
+
+@app.command()
+def edit_card(question: str, new_answer: str, file: Path = DEFAULT_FILE) -> None:
+    """Edit a flashcard's answer by its question."""
+    cards = load_cards(file)
+
+    for index, card in enumerate(cards):
+        if card.question == question:
+            cards[index] = replace(card, answer=new_answer)
+            save_cards(file, cards)
+            typer.echo(f"Updated card: {question} -> {new_answer}")
+            return
+
+    typer.echo(f"No card found with question: {question}")
+    raise typer.Exit(code=1)
+
+
+@app.command()
+def search_cards(keyword: str, file: Path = DEFAULT_FILE) -> None:
+    """Search flashcards whose question contains the given keyword."""
+    cards = load_cards(file)
+    matches = [card for card in cards if keyword.lower() in card.question.lower()]
+
+    if not matches:
+        typer.echo("No matching cards found.")
+        return
+
+    for card in matches:
+        typer.echo(f"[{card.category}] {card.question} -> {card.answer}")
 
 
 if __name__ == "__main__":

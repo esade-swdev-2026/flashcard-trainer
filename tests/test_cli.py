@@ -127,3 +127,48 @@ def test_add_card_to_unwritable_path_exits_cleanly(tmp_path: Path) -> None:
     result = runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(bad_file)])
     assert result.exit_code == 1
     assert "Could not save cards" in result.output
+
+
+def test_edit_card_updates_answer(tmp_path: Path) -> None:
+    file_path = tmp_path / "cards.json"
+    runner = CliRunner()
+    runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(file_path)])
+
+    result = runner.invoke(app, ["edit-card", "2+2?", "five", "--file", str(file_path)])
+
+    assert result.exit_code == 0
+    updated = load_cards(file_path)
+    assert updated == [Flashcard(question="2+2?", answer="five", category="general")]
+
+
+def test_edit_card_not_found_fails(tmp_path: Path) -> None:
+    file_path = tmp_path / "cards.json"
+    runner = CliRunner()
+
+    result = runner.invoke(app, ["edit-card", "nope?", "answer", "--file", str(file_path)])
+
+    assert result.exit_code == 1
+
+
+def test_search_cards_finds_matching_question(tmp_path: Path) -> None:
+    file_path = tmp_path / "cards.json"
+    runner = CliRunner()
+    runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(file_path)])
+    runner.invoke(app, ["add-card", "Capital of France?", "Paris", "--file", str(file_path)])
+
+    result = runner.invoke(app, ["search-cards", "capital", "--file", str(file_path)])
+
+    assert result.exit_code == 0
+    assert "Capital of France?" in result.stdout
+    assert "2+2?" not in result.stdout
+
+
+def test_search_cards_no_match_says_so(tmp_path: Path) -> None:
+    file_path = tmp_path / "cards.json"
+    runner = CliRunner()
+    runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(file_path)])
+
+    result = runner.invoke(app, ["search-cards", "nothing", "--file", str(file_path)])
+
+    assert result.exit_code == 0
+    assert "no matching cards" in result.stdout.lower()
