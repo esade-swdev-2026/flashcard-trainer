@@ -134,5 +134,19 @@ def edit_card(question: str, new_answer: str, file: Path = DEFAULT_FILE) -> None
     raise typer.Exit(code=1)
 
 
+@app.command()
+def search_cards(keyword: str, file: Path = DEFAULT_FILE) -> None:
+    """Search flashcards whose question contains the given keyword."""
+    cards = load_cards(file)
+    matches = [card for card in cards if keyword.lower() in card.question.lower()]
+
+    if not matches:
+        typer.echo("No matching cards found.")
+        return
+
+    for card in matches:
+        typer.echo(f"[{card.category}] {card.question} -> {card.answer}")
+
+
 if __name__ == "__main__":
     app()
