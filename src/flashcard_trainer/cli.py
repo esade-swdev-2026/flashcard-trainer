@@ -7,6 +7,7 @@ import typer
 from flashcard_trainer.flashcards import (
     Flashcard,
     check_answer,
+    count_by_box,
     due_cards,
     due_date,
     is_due,
@@ -116,6 +117,20 @@ def quiz(file: Path = DEFAULT_FILE) -> None:
 
     save_cards_or_exit(file, updated_cards)
     typer.echo(f"Score: {score_percentage(results):.0f}%")
+
+
+@app.command()
+def stats(file: Path = DEFAULT_FILE) -> None:
+    """Show how many cards are in each Leitner box and how many are due today."""
+    cards = load_cards_or_exit(file)
+
+    if not cards:
+        typer.echo("No cards yet. Add one with add-card.")
+        return
+
+    for box, count in count_by_box(cards).items():
+        typer.echo(f"Box {box}: {count}")
+    typer.echo(f"Due today: {len(due_cards(cards, date.today()))} of {len(cards)}")
 
 
 @app.command()
