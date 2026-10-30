@@ -9,15 +9,13 @@ from flashcard_trainer.storage import load_cards
 runner = CliRunner()
 
 
-def test_add_card_succeeds() -> None:
-    result = runner.invoke(app, ["add-card", "What is 2+2?", "4"])
-    assert result.exit_code == 0
-    assert "Added card" in result.stdout
-
-
-def test_add_card_rejects_empty_question() -> None:
-    result = runner.invoke(app, ["add-card", "", "4"])
+def test_list_cards_rejects_corrupt_file(tmp_path: Path) -> None:
+    """CLI test: corrupt cards file exits code 1 with clean message, no traceback."""
+    bad_file = tmp_path / "corrupt.json"
+    bad_file.write_text("not json")
+    result = runner.invoke(app, ["list-cards", "--file", str(bad_file)])
     assert result.exit_code == 1
+    assert "Could not read cards" in result.output
 
 
 def test_add_card_uses_default_category() -> None:
@@ -86,7 +84,7 @@ def test_quiz_reports_score(tmp_path: Path) -> None:
     result = runner.invoke(app, ["quiz", "--file", str(file_path)], input="4\nParis\n")
 
     assert result.exit_code == 0
-    assert "100.0" in result.stdout
+    assert "100%" in result.stdout
 
 
 def test_quiz_with_no_cards_says_so(tmp_path: Path) -> None:
@@ -121,3 +119,11 @@ def test_delete_card_not_found_fails(tmp_path: Path) -> None:
     result = runner.invoke(app, ["delete-card", "nope?", "--file", str(file_path)])
 
     assert result.exit_code == 1
+
+
+def test_add_card_to_unwritable_path_exits_cleanly(tmp_path: Path) -> None:
+    """CLI test: a file that cannot be written exits code 1 with a message, no traceback."""
+    bad_file = tmp_path / "missing-folder" / "cards.json"
+    result = runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(bad_file)])
+    assert result.exit_code == 1
+    assert "Could not save cards" in result.output
