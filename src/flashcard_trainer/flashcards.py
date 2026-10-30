@@ -55,6 +55,13 @@ def due_cards(cards: list[Flashcard], today: date) -> list[Flashcard]:
     return [card for card in cards if is_due(card, today)]
 
 
+def count_by_box(cards: list[Flashcard]) -> dict[int, int]:
+    counts = {box: 0 for box in REVIEW_INTERVAL_DAYS}
+    for card in cards:
+        counts[card.box] += 1
+    return counts
+
+
 def review_card(card: Flashcard, was_correct: bool, today: date) -> Flashcard:
     return replace(card, box=next_box(card.box, was_correct), last_reviewed=today)
 
