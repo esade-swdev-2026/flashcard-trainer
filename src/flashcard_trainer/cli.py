@@ -48,6 +48,20 @@ def list_cards(file: Path = DEFAULT_FILE) -> None:
 
 
 @app.command()
+def delete_card(question: str, file: Path = DEFAULT_FILE) -> None:
+    """Delete a flashcard by its question."""
+    cards = load_cards(file)
+    remaining = [card for card in cards if card.question != question]
+
+    if len(remaining) == len(cards):
+        typer.echo(f"No card found with question: {question}")
+        raise typer.Exit(code=1)
+
+    save_cards(file, remaining)
+    typer.echo(f"Deleted card: {question}")
+
+
+@app.command()
 def quiz(file: Path = DEFAULT_FILE) -> None:
     """Quiz yourself on all saved flashcards."""
     cards = load_cards(file)

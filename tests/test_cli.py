@@ -97,3 +97,27 @@ def test_quiz_with_no_cards_says_so(tmp_path: Path) -> None:
 
     assert result.exit_code == 0
     assert "no cards" in result.stdout.lower()
+
+
+def test_delete_card_removes_matching_card(tmp_path: Path) -> None:
+    file_path = tmp_path / "cards.json"
+    runner = CliRunner()
+    runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(file_path)])
+    runner.invoke(app, ["add-card", "Capital of France?", "Paris", "--file", str(file_path)])
+
+    result = runner.invoke(app, ["delete-card", "2+2?", "--file", str(file_path)])
+
+    assert result.exit_code == 0
+    remaining = load_cards(file_path)
+    assert remaining == [
+        Flashcard(question="Capital of France?", answer="Paris", category="general")
+    ]
+
+
+def test_delete_card_not_found_fails(tmp_path: Path) -> None:
+    file_path = tmp_path / "cards.json"
+    runner = CliRunner()
+
+    result = runner.invoke(app, ["delete-card", "nope?", "--file", str(file_path)])
+
+    assert result.exit_code == 1
