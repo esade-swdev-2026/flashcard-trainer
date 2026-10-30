@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -115,6 +116,22 @@ def quiz(file: Path = DEFAULT_FILE) -> None:
 
     save_cards_or_exit(file, updated_cards)
     typer.echo(f"Score: {score_percentage(results):.0f}%")
+
+
+@app.command()
+def edit_card(question: str, new_answer: str, file: Path = DEFAULT_FILE) -> None:
+    """Edit a flashcard's answer by its question."""
+    cards = load_cards(file)
+
+    for index, card in enumerate(cards):
+        if card.question == question:
+            cards[index] = replace(card, answer=new_answer)
+            save_cards(file, cards)
+            typer.echo(f"Updated card: {question} -> {new_answer}")
+            return
+
+    typer.echo(f"No card found with question: {question}")
+    raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":
