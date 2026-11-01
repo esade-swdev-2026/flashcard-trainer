@@ -172,3 +172,21 @@ def test_search_cards_no_match_says_so(tmp_path: Path) -> None:
 
     assert result.exit_code == 0
     assert "no matching cards" in result.stdout.lower()
+
+
+def test_delete_card_with_corrupt_file_exits_cleanly(tmp_path: Path) -> None:
+    """CLI test: delete-card on a corrupt cards file exits code 1 with a message, no traceback."""
+    corrupt_file = tmp_path / "cards.json"
+    corrupt_file.write_text("not json")
+    result = runner.invoke(app, ["delete-card", "2+2?", "--file", str(corrupt_file)])
+    assert result.exit_code == 1
+    assert "Could not read cards" in result.output
+
+
+def test_search_cards_with_corrupt_file_exits_cleanly(tmp_path: Path) -> None:
+    """CLI test: search-cards on a corrupt cards file exits code 1 with a message, no traceback."""
+    corrupt_file = tmp_path / "cards.json"
+    corrupt_file.write_text("not json")
+    result = runner.invoke(app, ["search-cards", "capital", "--file", str(corrupt_file)])
+    assert result.exit_code == 1
+    assert "Could not read cards" in result.output

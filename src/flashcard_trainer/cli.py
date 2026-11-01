@@ -81,14 +81,14 @@ def list_cards(file: Path = DEFAULT_FILE) -> None:
 @app.command()
 def delete_card(question: str, file: Path = DEFAULT_FILE) -> None:
     """Delete a flashcard by its question."""
-    cards = load_cards(file)
+    cards = load_cards_or_exit(file)
     remaining = [card for card in cards if card.question != question]
 
     if len(remaining) == len(cards):
         typer.echo(f"No card found with question: {question}")
         raise typer.Exit(code=1)
 
-    save_cards(file, remaining)
+    save_cards_or_exit(file, remaining)
     typer.echo(f"Deleted card: {question}")
 
 
@@ -136,12 +136,12 @@ def stats(file: Path = DEFAULT_FILE) -> None:
 @app.command()
 def edit_card(question: str, new_answer: str, file: Path = DEFAULT_FILE) -> None:
     """Edit a flashcard's answer by its question."""
-    cards = load_cards(file)
+    cards = load_cards_or_exit(file)
 
     for index, card in enumerate(cards):
         if card.question == question:
             cards[index] = replace(card, answer=new_answer)
-            save_cards(file, cards)
+            save_cards_or_exit(file, cards)
             typer.echo(f"Updated card: {question} -> {new_answer}")
             return
 
@@ -152,7 +152,7 @@ def edit_card(question: str, new_answer: str, file: Path = DEFAULT_FILE) -> None
 @app.command()
 def search_cards(keyword: str, file: Path = DEFAULT_FILE) -> None:
     """Search flashcards whose question contains the given keyword."""
-    cards = load_cards(file)
+    cards = load_cards_or_exit(file)
     matches = [card for card in cards if keyword.lower() in card.question.lower()]
 
     if not matches:
