@@ -190,3 +190,12 @@ def test_search_cards_with_corrupt_file_exits_cleanly(tmp_path: Path) -> None:
     result = runner.invoke(app, ["search-cards", "capital", "--file", str(corrupt_file)])
     assert result.exit_code == 1
     assert "Could not read cards" in result.output
+
+
+def test_quiz_with_category_that_has_no_cards_says_so(tmp_path: Path) -> None:
+    """CLI test: quiz --category with no matching cards prints a message and asks nothing."""
+    cards_file = tmp_path / "cards.json"
+    runner.invoke(app, ["add-card", "2+2?", "4", "--category", "math", "--file", str(cards_file)])
+    result = runner.invoke(app, ["quiz", "--category", "geo", "--file", str(cards_file)])
+    assert result.exit_code == 0
+    assert "No cards due today in category geo" in result.output
