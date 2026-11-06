@@ -56,8 +56,9 @@ def due_cards(cards: list[Flashcard], today: date) -> list[Flashcard]:
 
 
 def in_category(card: Flashcard, category: str | None) -> bool:
-    """True if the card is in the category, ignoring case. None matches every card."""
-    return category is None or card.category.lower() == category.lower()
+    """True if the card is in the category, ignoring case and surrounding spaces.
+    None matches every card."""
+    return category is None or card.category.strip().lower() == category.strip().lower()
 
 
 def should_review(card: Flashcard, today: date, category: str | None) -> bool:
