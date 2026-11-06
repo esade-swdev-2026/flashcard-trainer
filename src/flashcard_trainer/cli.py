@@ -10,9 +10,9 @@ from flashcard_trainer.flashcards import (
     count_by_box,
     due_cards,
     due_date,
-    is_due,
     review_card,
     score_percentage,
+    should_review,
 )
 from flashcard_trainer.storage import load_cards, save_cards
 
@@ -93,7 +93,7 @@ def delete_card(question: str, file: Path = DEFAULT_FILE) -> None:
 
 
 @app.command()
-def quiz(file: Path = DEFAULT_FILE) -> None:
+def quiz(file: Path = DEFAULT_FILE, category: str | None = None) -> None:
     """Review the cards that are due today, moving each one between Leitner boxes."""
     cards = load_cards_or_exit(file)
     today = date.today()
@@ -101,14 +101,15 @@ def quiz(file: Path = DEFAULT_FILE) -> None:
     if not cards:
         typer.echo("No cards yet. Add one with add-card.")
         return
-    if not due_cards(cards, today):
-        typer.echo("No cards due today. Come back tomorrow.")
+    if not any(should_review(card, today, category) for card in cards):
+        in_text = f" in category {category}" if category else ""
+        typer.echo(f"No cards due today{in_text}. Come back tomorrow.")
         return
 
     updated_cards = list(cards)
     results = []
     for index, card in enumerate(cards):
-        if not is_due(card, today):
+        if not should_review(card, today, category):
             continue
         was_correct = check_answer(card, typer.prompt(card.question))
         typer.echo("Correct!" if was_correct else f"Wrong. The answer is: {card.answer}")
