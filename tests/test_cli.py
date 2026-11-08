@@ -206,3 +206,44 @@ def test_edit_card_with_empty_answer_exits_and_keeps_old_answer(
     assert result.exit_code == 1
     assert "new answer must not be empty" in result.output
     assert cards_file.read_text() == before
+
+
+def test_quiz_with_category_that_has_no_cards_says_so(tmp_path: Path) -> None:
+    """CLI test: quiz --category with no matching cards prints a message and asks nothing."""
+    cards_file = tmp_path / "cards.json"
+    runner.invoke(app, ["add-card", "2+2?", "4", "--category", "math", "--file", str(cards_file)])
+    result = runner.invoke(app, ["quiz", "--category", "geo", "--file", str(cards_file)])
+    assert result.exit_code == 0
+    assert "No cards due today in category geo" in result.output
+
+
+def test_quiz_with_category_only_quizzes_matching_cards(tmp_path: Path) -> None:
+    """CLI test: quiz --category only quizzes cards from that category."""
+    cards_file = tmp_path / "cards.json"
+
+    runner.invoke(
+        app,
+        ["add-card", "2+2?", "4", "--category", "math", "--file", str(cards_file)],
+    )
+    runner.invoke(
+        app,
+        [
+            "add-card",
+            "Capital of France?",
+            "Paris",
+            "--category",
+            "geo",
+            "--file",
+            str(cards_file),
+        ],
+    )
+
+    result = runner.invoke(
+        app,
+        ["quiz", "--category", "geo", "--file", str(cards_file)],
+        input="Paris\n",
+    )
+
+    assert result.exit_code == 0
+    assert "Capital of France?" in result.output
+    assert "2+2?" not in result.output

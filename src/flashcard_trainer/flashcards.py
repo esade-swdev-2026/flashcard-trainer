@@ -55,6 +55,16 @@ def due_cards(cards: list[Flashcard], today: date) -> list[Flashcard]:
     return [card for card in cards if is_due(card, today)]
 
 
+def in_category(card: Flashcard, category: str | None) -> bool:
+    """True if the card is in the category, ignoring case and surrounding spaces.
+    None matches every card."""
+    return category is None or card.category.strip().lower() == category.strip().lower()
+
+
+def should_review(card: Flashcard, today: date, category: str | None) -> bool:
+    return is_due(card, today) and in_category(card, category)
+
+
 def count_by_box(cards: list[Flashcard]) -> dict[int, int]:
     counts = {box: 0 for box in REVIEW_INTERVAL_DAYS}
     for card in cards:
