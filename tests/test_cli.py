@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from flashcard_trainer.cli import app
@@ -190,6 +191,21 @@ def test_search_cards_with_corrupt_file_exits_cleanly(tmp_path: Path) -> None:
     result = runner.invoke(app, ["search-cards", "capital", "--file", str(corrupt_file)])
     assert result.exit_code == 1
     assert "Could not read cards" in result.output
+
+
+@pytest.mark.parametrize("blank_answer", ["", "   ", "\t"])
+def test_edit_card_with_empty_answer_exits_and_keeps_old_answer(
+    tmp_path: Path, blank_answer: str
+) -> None:
+    """CLI test: a blank new answer exits code 1 and leaves the whole file unchanged."""
+    cards_file = tmp_path / "cards.json"
+    runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(cards_file)])
+    runner.invoke(app, ["add-card", "Capital of France?", "Paris", "--file", str(cards_file)])
+    before = cards_file.read_text()
+    result = runner.invoke(app, ["edit-card", "2+2?", blank_answer, "--file", str(cards_file)])
+    assert result.exit_code == 1
+    assert "new answer must not be empty" in result.output
+    assert cards_file.read_text() == before
 
 
 def test_quiz_with_category_that_has_no_cards_says_so(tmp_path: Path) -> None:

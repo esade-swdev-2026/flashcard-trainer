@@ -137,6 +137,10 @@ def stats(file: Path = DEFAULT_FILE) -> None:
 @app.command()
 def edit_card(question: str, new_answer: str, file: Path = DEFAULT_FILE) -> None:
     """Edit a flashcard's answer by its question."""
+    if not new_answer.strip():
+        typer.echo("new answer must not be empty", err=True)
+        raise typer.Exit(code=1)
+
     cards = load_cards_or_exit(file)
 
     for index, card in enumerate(cards):
