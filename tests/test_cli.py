@@ -193,10 +193,12 @@ def test_search_cards_with_corrupt_file_exits_cleanly(tmp_path: Path) -> None:
 
 
 def test_edit_card_with_empty_answer_exits_and_keeps_old_answer(tmp_path: Path) -> None:
-    """CLI test: edit-card with a blank new answer exits code 1 and leaves the card unchanged."""
+    """CLI test: a blank new answer exits code 1 and leaves the whole file unchanged."""
     cards_file = tmp_path / "cards.json"
     runner.invoke(app, ["add-card", "2+2?", "4", "--file", str(cards_file)])
+    runner.invoke(app, ["add-card", "Capital of France?", "Paris", "--file", str(cards_file)])
+    before = cards_file.read_text()
     result = runner.invoke(app, ["edit-card", "2+2?", "   ", "--file", str(cards_file)])
     assert result.exit_code == 1
     assert "new answer must not be empty" in result.output
-    assert load_cards(cards_file)[0].answer == "4"
+    assert cards_file.read_text() == before
