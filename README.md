@@ -34,6 +34,46 @@ uv run flashcard-trainer list-cards
 uv run flashcard-trainer quiz
 ```
 
+Delete a card by its exact question:
+
+```bash
+uv run flashcard-trainer delete-card "Capital of France?"
+```
+
+Deletes the card with that exact question.
+
+Edit a card's answer:
+
+```bash
+uv run flashcard-trainer edit-card "Capital of France?" "Paris"
+```
+
+Changes that card's answer. An empty new answer is rejected.
+
+Search cards by keyword:
+
+```bash
+uv run flashcard-trainer search-cards France
+```
+
+Lists cards whose question contains the keyword, case-insensitively.
+
+Show Leitner statistics:
+
+```bash
+uv run flashcard-trainer stats
+```
+
+Shows how many cards are in each Leitner box and how many are due today.
+
+Quiz only one category:
+
+```bash
+uv run flashcard-trainer quiz --category geography
+```
+
+Only quizzes cards in that category.
+
 `quiz` asks each card that is due today and tells you if you were right. Cards are
 saved in `cards.json` in the current folder; pass `--file other.json` to any command
 to use a different file.
