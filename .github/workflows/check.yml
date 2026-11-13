@@ -45,3 +45,10 @@ jobs:
 
       - name: Tests
         run: uv run pytest
+
+
+      - name: Build the image
+        run: docker build -t flashcard-trainer .
+
+      - name: Run the image
+        run: docker run --rm flashcard-trainer --help
