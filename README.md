@@ -68,6 +68,31 @@ The higher the box, the longer until the card is due again:
 
 If no cards are due, `quiz` says so and exits.
 
+## Run with Docker
+
+Build the image once:
+
+```bash
+docker build -t flashcard-trainer .
+```
+
+Each `docker run --rm` starts a new container and deletes it when the command ends. The cards live in a named volume, `flashcards-data`, mounted at `/app/data`, so they survive between containers:
+
+```bash
+docker run --rm -v flashcards-data:/app/data flashcard-trainer add-card "Capital of France?" "Paris"
+docker run --rm -v flashcards-data:/app/data flashcard-trainer list-cards
+```
+
+`list-cards` still shows the card, even though the container that added it is gone.
+
+`quiz` asks for input, so it needs `-it`:
+
+```bash
+docker run --rm -it -v flashcards-data:/app/data flashcard-trainer quiz
+```
+
+To start over, delete the volume with `docker volume rm flashcards-data`.
+
 ## Develop
 
 ```
