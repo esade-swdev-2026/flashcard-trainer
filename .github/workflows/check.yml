@@ -45,3 +45,15 @@ jobs:
 
       - name: Tests
         run: uv run pytest
+
+
+      - name: Build the image
+        run: docker build -t flashcard-trainer .
+
+      - name: Run the image
+        run: docker run --rm flashcard-trainer --help
+
+      - name: Save and load a card in the image
+        run: |
+          docker run --rm -v ci-data:/app/data flashcard-trainer add-card "Capital of France?" "Paris"
+          docker run --rm -v ci-data:/app/data flashcard-trainer list-cards | grep "Capital of France?"
