@@ -57,3 +57,42 @@ jobs:
         run: |
           docker run --rm -v ci-data:/app/data flashcard-trainer add-card "Capital of France?" "Paris"
           docker run --rm -v ci-data:/app/data flashcard-trainer list-cards | grep "Capital of France?"
+
+  # Publishes the image to GHCR. Runs only after check is green, and only for a
+  # push to main or a v* tag, never for a pull request.
+  release:
+    needs: check
+    if: >-
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE: ghcr.io/esade-swdev-2026/flashcard-trainer
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build and tag with the commit
+        run: docker build -t "$IMAGE:${GITHUB_SHA::7}" .
+
+      - name: Tag with the version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: docker tag "$IMAGE:${GITHUB_SHA::7}" "$IMAGE:$GITHUB_REF_NAME"
+
+      - name: Push the image
+        run: docker push --all-tags "$IMAGE"
+
+      - name: Pull it back and run it
+        run: |
+          TAG="${GITHUB_SHA::7}"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then TAG="$GITHUB_REF_NAME"; fi
+          docker image rm --force $(docker images "$IMAGE" -q | sort -u)
+          docker pull "$IMAGE:$TAG"
+          docker run --rm "$IMAGE:$TAG" --help
