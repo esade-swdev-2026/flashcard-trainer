@@ -247,3 +247,25 @@ def test_quiz_with_category_only_quizzes_matching_cards(tmp_path: Path) -> None:
     assert result.exit_code == 0
     assert "Capital of France?" in result.output
     assert "2+2?" not in result.output
+
+
+def test_stats_counts_cards_per_box_and_due_today(tmp_path: Path) -> None:
+    cards_file = tmp_path / "cards.json"
+    runner.invoke(app, ["add-card", "Q1", "A1", "--file", str(cards_file)])
+    runner.invoke(app, ["add-card", "Q2", "A2", "--file", str(cards_file)])
+
+    result = runner.invoke(app, ["stats", "--file", str(cards_file)])
+
+    assert result.exit_code == 0
+    assert "Box 1: 2" in result.output
+    assert "Box 2: 0" in result.output
+    assert "Due today: 2 of 2" in result.output
+
+
+def test_stats_with_no_cards_says_so(tmp_path: Path) -> None:
+    cards_file = tmp_path / "cards.json"
+
+    result = runner.invoke(app, ["stats", "--file", str(cards_file)])
+
+    assert result.exit_code == 0
+    assert "No cards yet" in result.output
