@@ -124,6 +124,19 @@ docker run --rm -it -v flashcards-data:/app/data flashcard-trainer quiz
 
 To start over, delete the volume with `docker volume rm flashcards-data`.
 
+
+## Use of AI
+
+We developed the Flashcard Trainer as a team, from the initial idea and project structure to the CLI commands, Leitner system and testing. During the process, we used ChatGPT and Claude to help us with certain tasks, mainly when we needed suggestions, explanations or help solving problems.
+
+- **Development and testing:** We used AI to help with some parts of the code, troubleshoot issues and suggest test cases. One example is the CLI tests for `stats`. We checked the suggestions, made changes where needed and ran the tests ourselves to make sure everything worked.
+- **Docker and CI:** AI was useful for understanding things like layer caching, non-root users and Docker volumes. We also used it when working on the Dockerfile and the GitHub Actions release workflow. We tested the Docker setup locally and checked the results in CI.
+- **Documentation:** We used AI to help write some README sections and command examples. We didn't just copy them though. When we tested the commands, we found two problems with their order and the category quiz, which we then corrected.
+- **Git and code review:** AI helped us understand Git commands, deal with issues and prepare some review comments. The actual commits, reviews and merges were handled by us.
+
+Overall, AI was mainly a tool to help us work through technical problems and speed up certain tasks. The project decisions, testing and responsibility for the final result remained with our team.
+
+
 ## Develop
 
 ```
